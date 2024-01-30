@@ -1,0 +1,98 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace AspNetWebServer.Migrations
+{
+    /// <inheritdoc />
+    public partial class migration_0_0_0_4 : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "MountedProcesses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    MonutedIndex = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProcessId = table.Column<int>(type: "int", nullable: false),
+                    PcSenderId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MountedProcesses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MountedProcesses_Pcs_PcSenderId",
+                        column: x => x.PcSenderId,
+                        principalTable: "Pcs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ProcessActions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Action = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProcessId = table.Column<int>(type: "int", nullable: false),
+                    MountedProcessId = table.Column<int>(type: "int", nullable: false),
+                    PcSenderId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProcessActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProcessActions_MountedProcesses_MountedProcessId",
+                        column: x => x.MountedProcessId,
+                        principalTable: "MountedProcesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProcessActions_Pcs_PcSenderId",
+                        column: x => x.PcSenderId,
+                        principalTable: "Pcs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MountedProcesses_PcSenderId",
+                table: "MountedProcesses",
+                column: "PcSenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessActions_MountedProcessId",
+                table: "ProcessActions",
+                column: "MountedProcessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessActions_PcSenderId",
+                table: "ProcessActions",
+                column: "PcSenderId");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "ProcessActions");
+
+            migrationBuilder.DropTable(
+                name: "MountedProcesses");
+        }
+    }
+}

@@ -1,0 +1,85 @@
+{
+  "ContentRoots": [
+    "/app/wwwroot"
+  ],
+  "Root": {
+    "Children": {
+      "css": {
+        "Children": {
+          "main-page.css": {
+            "Children": null,
+            "Asset": {
+              "ContentRootIndex": 0,
+              "SubPath": "css/main-page.css"
+            },
+            "Patterns": null
+          }
+        },
+        "Asset": null,
+        "Patterns": null
+      },
+      "index.html": {
+        "Children": null,
+        "Asset": {
+          "ContentRootIndex": 0,
+          "SubPath": "index.html"
+        },
+        "Patterns": null
+      },
+      "js": {
+        "Children": {
+          "from_js.js": {
+            "Children": null,
+            "Asset": {
+              "ContentRootIndex": 0,
+              "SubPath": "js/from_js.js"
+            },
+            "Patterns": null
+          },
+          "header.js": {
+            "Children": null,
+            "Asset": {
+              "ContentRootIndex": 0,
+              "SubPath": "js/header.js"
+            },
+            "Patterns": null
+          },
+          "main-qwerys-axion.js": {
+            "Children": null,
+            "Asset": {
+              "ContentRootIndex": 0,
+              "SubPath": "js/main-qwerys-axion.js"
+            },
+            "Patterns": null
+          }
+        },
+        "Asset": null,
+        "Patterns": null
+      },
+      "login.html": {
+        "Children": null,
+        "Asset": {
+          "ContentRootIndex": 0,
+          "SubPath": "login.html"
+        },
+        "Patterns": null
+      },
+      "register.html": {
+        "Children": null,
+        "Asset": {
+          "ContentRootIndex": 0,
+          "SubPath": "register.html"
+        },
+        "Patterns": null
+      }
+    },
+    "Asset": null,
+    "Patterns": [
+      {
+        "ContentRootIndex": 0,
+        "Pattern": "**",
+        "Depth": 0
+      }
+    ]
+  }
+}

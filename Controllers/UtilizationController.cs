@@ -44,7 +44,7 @@ namespace AspNetWebServer.Controllers
             DateTime Date = DateTime.Now;
             if (CPU != null && RAM != null ) {
                 _dbContext.Utilizations.Add(new Utilization() { RAM = (float)RAM, CPU_load = (float)CPU, Pc = PC, Date = Date });
-                _dbContext.SaveChanges();
+                _dbContext.SaveChangesAsync();
             }
 
             
@@ -63,7 +63,7 @@ namespace AspNetWebServer.Controllers
         public void DeleteAll()
         {
              _dbContext.Utilizations.RemoveRange(_dbContext.Utilizations.ToList<Utilization>());
-             _dbContext.SaveChanges();
+             _dbContext.SaveChangesAsync();
              //return _dbContext.Utilizations.ToList<Utilization>();
         }
     }

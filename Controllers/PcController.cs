@@ -7,6 +7,7 @@ using AspNetWebServer.Model.Data;
 using System.Web.Http.Cors;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AspNetWebServer.Controllers
@@ -36,16 +37,26 @@ namespace AspNetWebServer.Controllers
                 _dbContext.Pcs.Add(new Pc() { hostname = hostname, Online = true });
                 _dbContext.SaveChanges();
             }
-            else
-            {
-                
-            }
         }
         
         [HttpGet("InfoPc/{hostname}")]
-        public Pc InfoPc([FromRoute] string hostname)
+        public async Task<Pc> InfoPc([FromRoute] string hostname)
         {
-            return _dbContext.Pcs.FirstOrDefault<Pc>(pc => pc.hostname == hostname);
+            return await _dbContext.Pcs.FirstOrDefaultAsync<Pc>(pc => pc.hostname == hostname);
         }
+        
+        
+        
+        [HttpPost("DeletePC/{hostname}")]
+        public async Task DeletePc([FromRoute] string hostname)
+        {
+            Pc? pc = await _dbContext.Pcs.FirstOrDefaultAsync<Pc>(pc => pc.hostname == hostname);
+            if (pc != null)
+            {
+                _dbContext.Pcs.Remove(pc);
+                _dbContext.SaveChanges();
+            }
+        }
+        
     }
 }

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "BUFaVFjA8hEUTIDnKF6VHOC6qeIGLMIwn4QhsXCo3a0=",
+  "Hash": "9gD/x/o5HkcuTwyYzlT54oAd6xH9uIwwM7Wu+Qxcrew=",
   "Source": "AspNetWebServer",
   "BasePath": "_content/AspNetWebServer",
   "Mode": "Default",
@@ -10,7 +10,7 @@
     {
       "Name": "AspNetWebServer\\wwwroot",
       "Source": "AspNetWebServer",
-      "ContentRoot": "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\wwwroot\\",
       "BasePath": "_content/AspNetWebServer",
       "Pattern": "**"
     }

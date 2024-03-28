@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj": {}
+    "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj": {
+    "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj",
+        "projectUniqueName": "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj",
         "projectName": "AspNetWebServer",
-        "projectPath": "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj",
-        "packagesPath": "C:\\Users\\Ivan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ivan\\RiderProjects\\AspNetWebServer\\obj\\",
+        "projectPath": "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\AspNetWebServer.csproj",
+        "packagesPath": "C:\\Users\\amomomogugus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\amomomogugus\\RiderProjects\\AspNetWebServer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Ivan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\amomomogugus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -102,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

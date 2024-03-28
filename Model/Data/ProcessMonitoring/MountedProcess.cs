@@ -8,5 +8,5 @@ public class MountedProcess
     public int ProcessId { get; set; }
     public Pc PcSender { get; set; }
     public DateTime Date { get; set; }
-
+    
 }

@@ -22,7 +22,7 @@ namespace AspNetWebServer.Controllers
 
 
         [HttpGet("GetAllUsers")]
-        public List<User> GetUsers() {
+        public async Task<List<User>> GetUsers() {
             return _dbContext.Users.ToList<User>();
         }
 

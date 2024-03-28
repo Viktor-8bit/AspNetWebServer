@@ -72,7 +72,6 @@ namespace AspNetWebServer
 
             app.UseEndpoints(endpoints =>
             {
-                // endpoints.MapFallbackToFile("/index.html");
                 endpoints.MapControllerRoute(
                     "default",
                     "api/{controller}/{action}/{id?}");

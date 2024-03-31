@@ -4,6 +4,7 @@
 
 using System.Collections.Immutable;
 using System.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,8 +40,10 @@ public class ProcessController : ControllerBase
             return NotFound();
         
         
-        MountedProcess last = _dbContext.MountedProcesses.Where(p => p.PcSender.hostname == hostname)
-            .OrderByDescending(x => x.MonutedIndex).FirstOrDefault<MountedProcess>();
+        MountedProcess last = _dbContext.MountedProcesses
+            .Where(p => p.PcSender.hostname == hostname)
+            .OrderByDescending(x => x.MonutedIndex)
+            .FirstOrDefault<MountedProcess>();
         int index = last.MonutedIndex;
         
         DateTime SendDate = DateTime.Now;
@@ -73,7 +76,10 @@ public class ProcessController : ControllerBase
         
         int index = 0;
         
-        MountedProcess last = _dbContext.MountedProcesses.Where(p => p.PcSender.hostname == hostname).OrderByDescending(x => x.Id).FirstOrDefault<MountedProcess>();
+        MountedProcess last = _dbContext.MountedProcesses
+            .Where(p => p.PcSender.hostname == hostname)
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefault<MountedProcess>();
 
         if (last != null)
         {
@@ -100,12 +106,12 @@ public class ProcessController : ControllerBase
 
     
     // получаем процессы по дате
-    [HttpGet("GetProcessesByDate/{hostname}/{date}")]
-    public async Task<List<JsonProcessClient>> GetAllProcessByDate([FromRoute] string hostname, [FromRoute] DateTime date)
+    [HttpGet("GetProcessesByDate/{hostname}/{date}")] public async Task<List<JsonProcessClient>> GetAllProcessByDate([FromRoute] string hostname, [FromRoute] DateTime date)
     {
         
         int mountedindex = 
-            _dbContext.ProcessActions.Where(pa => pa.Date.Equals(date))
+            _dbContext.ProcessActions
+                .Where(pa => pa.Date.Equals(date))
                 .Select(p => p.MountedProcess)
                 .FirstOrDefault<MountedProcess>().MonutedIndex;
         
@@ -132,8 +138,7 @@ public class ProcessController : ControllerBase
             if (pa.Action.Equals(ProcessActions.Closed))
             {
                 
-                JsonProcessClient delete_process = 
-                    start_processes
+                JsonProcessClient delete_process = start_processes
                         .Where(pac => pac.ProcessId == pa.ProcessId && pac.Name == pa.Name)
                         .FirstOrDefault<JsonProcessClient>();
                 
@@ -142,8 +147,12 @@ public class ProcessController : ControllerBase
 
             if (pa.Action.Equals(ProcessActions.Opened))
             {
-                start_processes.Add(new JsonProcessClient() 
-                    { Name = pa.Name, Date = pa.Date, ProcessId = pa.ProcessId } );
+                start_processes.Add(new JsonProcessClient()
+                {
+                    Name = pa.Name, 
+                    Date = pa.Date, 
+                    ProcessId = pa.ProcessId
+                } );
             }
         }
         
@@ -152,7 +161,7 @@ public class ProcessController : ControllerBase
 
     
     // можем взять статичные процессы, Mid - MonutedIndex
-    [HttpGet("GetProcessMounted/{hostname}/{Mid}")] 
+    [HttpGet("GetProcessMounted/{hostname}/{Mid}")]
     public async Task<List<MountedProcess>> GetMounted([FromRoute] string hostname, [FromRoute] int Mid)
     {
         return _dbContext.MountedProcesses

@@ -15,5 +15,5 @@ public class ProcessAction
     public MountedProcess MountedProcess { get; set; }
     public Pc PcSender { get; set; }
     public DateTime Date { get; set; }
-    
+    public DateTime TimeStarted { get; set; }
 }

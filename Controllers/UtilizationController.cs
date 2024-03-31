@@ -1,9 +1,12 @@
 ﻿using System.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.JavaScript;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security;
 using AspNetWebServer.Model;
 using AspNetWebServer.Model.Data;
+using AspNetWebServer.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 
 using Newtonsoft.Json.Linq;
@@ -25,37 +28,43 @@ namespace AspNetWebServer.Controllers
         }
 
         [HttpPost("SendFromPc/{hostname}")]
-        public async Task<IActionResult>  SendData([FromRoute] string hostname)
+        public async Task<IActionResult>  SendData([FromRoute] string hostname, [FromBody] List<JsonUtilization> StashedUtilizations)
         {
-            Pc PC = _dbContext.Pcs.FirstOrDefault<Pc>(pc => pc.hostname == hostname);
-            
-            Console.WriteLine(Request.Body);
-            JObject requestData = null;
-
-            var reader = new StreamReader(Request.Body);
-
-            var jsonReader = new JsonTextReader(reader);
-                
-            
-            requestData = await JObject.LoadAsync(jsonReader);
-            
-            float? CPU = (float)requestData["CPU"];
-            float? RAM = (float)requestData["RAM"];
-            DateTime Date = DateTime.Now;
-            if (CPU != null && RAM != null ) {
-                _dbContext.Utilizations.Add(new Utilization() { RAM = (float)RAM, CPU_load = (float)CPU, Pc = PC, Date = Date });
-                _dbContext.SaveChangesAsync();
+            try
+            {
+                Console.WriteLine(StashedUtilizations);
+                Pc PC = _dbContext.Pcs.FirstOrDefault<Pc>(pc => pc.hostname == hostname);
+                foreach (JsonUtilization stashed_util in StashedUtilizations)
+                {
+                    if (stashed_util.CPU != null && stashed_util.RAM != null)
+                    {
+                        await _dbContext.Utilizations.AddAsync(new Utilization()
+                        {
+                            RAM = stashed_util.RAM, 
+                            CPU_load = stashed_util.CPU, 
+                            Pc = PC, 
+                            Date = stashed_util.Date
+                        });
+                    }
+                }
+                await _dbContext.SaveChangesAsync();
+                return Ok();
             }
-
-            
-            return Ok();
+            catch
+            {
+                return BadRequest();
+            }
         }
         
         
-        [HttpGet("GetFromPc/{hostname}/{at}/{to}")]
-        public async Task<IEnumerable<Utilization>> GetUsers([FromRoute] string hostname, [FromRoute] string at, [FromRoute] string to)
+        [HttpGet("GetFromPc/{hostname}")] // , [FromRoute] string at, [FromRoute] string to
+        public async Task<IEnumerable<Utilization>> GetFromPC([FromRoute] string hostname) // , [FromRoute] string at, [FromRoute] string to
         {
-            List<Utilization> my_util = _dbContext.Utilizations.Where(util => util.Pc.hostname == hostname).OrderByDescending(u => u.Date).Take(5).ToList<Utilization>();
+            List<Utilization> my_util = _dbContext.Utilizations
+                .Where(util => util.Pc.hostname == hostname)
+                .OrderByDescending(u => u.Date)
+                .Take(5)
+                .ToList<Utilization>();
             return my_util;
         }
         
@@ -64,7 +73,6 @@ namespace AspNetWebServer.Controllers
         {
              _dbContext.Utilizations.RemoveRange(_dbContext.Utilizations.ToList<Utilization>());
              _dbContext.SaveChangesAsync();
-             //return _dbContext.Utilizations.ToList<Utilization>();
         }
     }
 }

@@ -59,9 +59,6 @@ namespace AspNetWebServer.Migrations
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime(6)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PcSenderId");
@@ -94,7 +91,7 @@ namespace AspNetWebServer.Migrations
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartTime")
+                    b.Property<DateTime>("TimeStarted")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");

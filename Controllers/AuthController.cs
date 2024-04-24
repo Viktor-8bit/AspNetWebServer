@@ -1,9 +1,9 @@
 ﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +16,8 @@ using AspNetWebServer.Model.Data;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
-using Scrypt; 
-    
+using BCrypt.Net;    
+
 namespace AspNetWebServer.Controllers;
 
 [Route("api/[controller]")]
@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
         _dbContext = dbContext;
     }
     
-    [HttpPost("Registration")]
+    [HttpPost("Registration/")]
     public async Task<IActionResult>  Registration([FromBody] JsonInfoSecSpec newInfoSecSpec)
     {
         
@@ -42,22 +42,66 @@ public class AuthController : ControllerBase
             return BadRequest();
         }
 
-        if (newInfoSecSpec.Password == null || newInfoSecSpec == null || newInfoSecSpec.Login == null)
+        if (newInfoSecSpec.Password == null || newInfoSecSpec.Login == null)
             return BadRequest();
 
+        
+        string salt = BCrypt.Net.BCrypt.GenerateSalt(12);
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(newInfoSecSpec.Password, salt);;
+        
         _dbContext.infoSecuritySpecialists.Add(
             new infoSecuritySpecialist()
             {
                 Login = newInfoSecSpec.Login,
-                HashPassword = newInfoSecSpec.Password
+                HashPassword = hashedPassword,
+                Salt = salt
             });
         
         await _dbContext.SaveChangesAsync();
         return Ok();
     }
-    
-    
-   
 
-    
+
+    [HttpPost("Login/")]
+    public async Task<IActionResult> Login([FromBody] JsonInfoSecSpec authInfoSecSpec)
+    {
+        
+        if (_dbContext.infoSecuritySpecialists.Where(iSS => iSS.Login.Equals(authInfoSecSpec.Login)).Count() == 0)
+        {
+            return BadRequest();
+        }
+
+        infoSecuritySpecialist? bdInfoSecSpec = _dbContext.infoSecuritySpecialists
+            .Where(iSS => iSS.Login.Equals(authInfoSecSpec.Login))
+            .FirstOrDefault<infoSecuritySpecialist>();
+        
+        string userHashedPassword = BCrypt.Net.BCrypt.HashPassword(authInfoSecSpec.Password, bdInfoSecSpec!.Salt);
+        
+        if (!userHashedPassword.Equals(bdInfoSecSpec.HashPassword))
+        {
+            return ValidationProblem();
+        } 
+
+        var claims = new List<Claim> {new Claim(ClaimTypes.Name, bdInfoSecSpec.Login) };
+
+        var jwt = new JwtSecurityToken(
+            issuer: AuthOptions.ISSUER,
+            audience: AuthOptions.AUDIENCE,
+            claims: claims,
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(400)), // 400 минут
+            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            
+        return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+    }
+
+
+    [HttpGet("LoginCheck/")]
+    [Authorize]
+    public async Task<IActionResult> LoginCheck()
+    {
+        
+        return Ok();
+    }
+
+
 }

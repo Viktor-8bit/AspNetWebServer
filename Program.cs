@@ -26,6 +26,7 @@ class Program {
                     //    true, true)
                     .AddEnvironmentVariables();
                 
+                
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }

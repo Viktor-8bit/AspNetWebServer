@@ -470,4 +470,4 @@ C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\Microsoft.A
 C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
 C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\Npgsql.dll
 C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\Scrypt.dll
+C:\Users\amomomogugus\RiderProjects\AspNetWebServer\bin\Debug\net8.0\BCrypt.Net-Next.dll

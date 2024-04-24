@@ -32,7 +32,8 @@ namespace AspNetWebServer
             //TODO: Swagger 401 model
             //services.Configure<ApiBehaviorOptions>(options => options.);
 
-
+            
+            
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers();
 
@@ -43,35 +44,51 @@ namespace AspNetWebServer
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        // указывает, будет ли валидироваться издатель при валидации токена
                         ValidateIssuer = true,
-                        // строка, представляющая издателя
                         ValidIssuer = AuthOptions.ISSUER,
-                        // будет ли валидироваться потребитель токена
                         ValidateAudience = true,
-                        // установка потребителя токена
                         ValidAudience = AuthOptions.AUDIENCE,
-                        // будет ли валидироваться время существования
                         ValidateLifetime = true,
-                        // установка ключа безопасности
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        // валидация ключа безопасности
                         ValidateIssuerSigningKey = true,
                     };
                 });
 
             //Docs
+            
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.AllowAnyOrigin()
+                    builder
+                        .WithOrigins("http://localhost:5173", "185.104.114.7", "http://localhost:8000")
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
+                /*
+                options.AddPolicy("AuthPolicy", builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:5173", "185.104.114.7", "http://localhost:8000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }); */
             });
-
-
+           
+                /*
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "MyPolicy",
+                    policy =>
+                    {
+                        policy.WithOrigins("*",
+                                "http://localhost:5173/")
+                            .WithMethods("PUT", "DELETE", "GET");
+                    });
+            });
+            */
 
             //Add Caching
             services.AddMemoryCache();
@@ -89,15 +106,18 @@ namespace AspNetWebServer
             {
 
             }
+            //app.UseCors("AuthPolicy");
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
+            
             app.UseCors();
-
+            
 
             app.UseEndpoints(endpoints =>
             {

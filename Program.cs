@@ -2,8 +2,6 @@
 
 
 
-
-
 using Microsoft.AspNetCore.Hosting;
 
 namespace AspNetWebServer;
@@ -27,6 +25,7 @@ class Program {
                     //.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
                     //    true, true)
                     .AddEnvironmentVariables();
+                
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }

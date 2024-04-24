@@ -3,7 +3,15 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 using System.Security;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+
+
 using AspNetWebServer.Model.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AspNetWebServer
 {
@@ -28,8 +36,29 @@ namespace AspNetWebServer
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers();
 
-            //Authorization
-
+            //Authorization && Authorization
+            services.AddAuthorization();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // указывает, будет ли валидироваться издатель при валидации токена
+                        ValidateIssuer = true,
+                        // строка, представляющая издателя
+                        ValidIssuer = AuthOptions.ISSUER,
+                        // будет ли валидироваться потребитель токена
+                        ValidateAudience = true,
+                        // установка потребителя токена
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        // будет ли валидироваться время существования
+                        ValidateLifetime = true,
+                        // установка ключа безопасности
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        // валидация ключа безопасности
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
 
             //Docs
             services.AddCors(options =>

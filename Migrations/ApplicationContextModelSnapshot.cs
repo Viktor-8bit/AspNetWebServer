@@ -4,6 +4,7 @@ using AspNetWebServer.Model.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,22 +18,32 @@ namespace AspNetWebServer.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gin");
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AspNetWebServer.Model.Data.Pc", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Online")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("hostname")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Id", "hostname")
+                        .HasDatabaseName("Pc_Id_Hostname_Index");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Id", "hostname"), "btree");
 
                     b.ToTable("Pcs");
                 });
@@ -41,27 +52,34 @@ namespace AspNetWebServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MonutedIndex")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("PcSenderId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProcessId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PcSenderId");
+
+                    b.HasIndex("Id", "MonutedIndex")
+                        .HasDatabaseName("MountedProcess_Id_MonutedIndex_Index");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Id", "MonutedIndex"), "btree");
 
                     b.ToTable("MountedProcesses");
                 });
@@ -70,35 +88,42 @@ namespace AspNetWebServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Action")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MountedProcessId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("PcSenderId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProcessId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStarted")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MountedProcessId");
 
                     b.HasIndex("PcSenderId");
+
+                    b.HasIndex("Id", "Date", "MountedProcessId")
+                        .HasDatabaseName("ProcessAction_Id_Date_MountedProcessId_Index");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Id", "Date", "MountedProcessId"), "btree");
 
                     b.ToTable("ProcessActions");
                 });
@@ -107,18 +132,16 @@ namespace AspNetWebServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<string>("HashPassword")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("PCId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -131,25 +154,52 @@ namespace AspNetWebServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<float>("CPU_load")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("PcId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<float>("RAM")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PcId");
 
                     b.ToTable("Utilizations");
+                });
+
+            modelBuilder.Entity("AspNetWebServer.Model.Data.infoSecuritySpecialist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("HashPassword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("infoSecuritySpecialists");
                 });
 
             modelBuilder.Entity("AspNetWebServer.Model.Data.ProcessMonitoring.MountedProcess", b =>
@@ -165,8 +215,8 @@ namespace AspNetWebServer.Migrations
 
             modelBuilder.Entity("AspNetWebServer.Model.Data.ProcessMonitoring.ProcessAction", b =>
                 {
-                    b.HasOne("AspNetWebServer.Model.Data.ProcessMonitoring.MountedProcess", "MountedProcess")
-                        .WithMany()
+                    b.HasOne("AspNetWebServer.Model.Data.ProcessMonitoring.MountedProcess", "MountedProces")
+                        .WithMany("ProcessActions")
                         .HasForeignKey("MountedProcessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -177,7 +227,7 @@ namespace AspNetWebServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MountedProcess");
+                    b.Navigation("MountedProces");
 
                     b.Navigation("PcSender");
                 });
@@ -202,6 +252,11 @@ namespace AspNetWebServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Pc");
+                });
+
+            modelBuilder.Entity("AspNetWebServer.Model.Data.ProcessMonitoring.MountedProcess", b =>
+                {
+                    b.Navigation("ProcessActions");
                 });
 #pragma warning restore 612, 618
         }

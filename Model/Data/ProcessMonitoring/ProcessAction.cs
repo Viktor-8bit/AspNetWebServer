@@ -12,7 +12,9 @@ public class ProcessAction
     public ProcessActions Action { get; set; }
     public string Name { get; set; }
     public int ProcessId { get; set; }
-    public MountedProcess MountedProcess { get; set; }
+    
+    public int MountedProcessId { get; set; }
+    public MountedProcess MountedProces { get; set; }
     public Pc PcSender { get; set; }
     public DateTime Date { get; set; }
     public DateTime TimeStarted { get; set; }

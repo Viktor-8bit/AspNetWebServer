@@ -24,6 +24,8 @@ public class ProcessController : ControllerBase
 {
     private readonly ApplicationContext _dbContext;
 
+    public TimeZoneInfo KraskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Krasnoyarsk");
+    
     public ProcessController(ApplicationContext dbContext )
     {
         _dbContext = dbContext;
@@ -46,7 +48,7 @@ public class ProcessController : ControllerBase
             .FirstOrDefault<MountedProcess>();
         int index = last.MonutedIndex;
         
-        DateTime SendDate = DateTime.Now;
+        DateTime SendDate = DateTime.UtcNow;
         
         foreach (var aprocess in ActionProcesses)
         {
@@ -57,7 +59,8 @@ public class ProcessController : ControllerBase
                 Action = (aprocess.Action == '-') ? ProcessActions.Closed : ProcessActions.Opened,
                 Date = SendDate,
                 PcSender = pcsender,
-                MountedProcess = last
+                MountedProces = last,
+                TimeStarted = aprocess.TimeStarted
             });
         }
         await _dbContext.SaveChangesAsync();
@@ -86,7 +89,7 @@ public class ProcessController : ControllerBase
             index = last.MonutedIndex + 1;
         }
 
-        DateTime SendDate = DateTime.Now;
+        DateTime SendDate = DateTime.UtcNow;
         
         foreach (JsonProcess jp in MountProcesses)
         {
@@ -108,11 +111,12 @@ public class ProcessController : ControllerBase
     // получаем процессы по дате
     [HttpGet("GetProcessesByDate/{hostname}/{date}")] public async Task<List<JsonProcessClient>> GetAllProcessByDate([FromRoute] string hostname, [FromRoute] DateTime date)
     {
-        
+
+        date = date.ToUniversalTime();
         int mountedindex = 
             _dbContext.ProcessActions
                 .Where(pa => pa.Date.Equals(date))
-                .Select(p => p.MountedProcess)
+                .Select(p => p.MountedProces)
                 .FirstOrDefault<MountedProcess>().MonutedIndex;
         
         // вытаскиваем начальное положение
@@ -129,7 +133,7 @@ public class ProcessController : ControllerBase
         
         // вытаскиваем действия над начальным положением 
         List<ProcessAction> process_actions = _dbContext.ProcessActions
-                .Where(pa => pa.MountedProcess.MonutedIndex == mountedindex && pa.Date <= date)
+                .Where(pa => pa.MountedProces.MonutedIndex == mountedindex && pa.Date <= date)
                 .OrderBy(pa => pa.Date)
                 .ToList<ProcessAction>();
         
@@ -156,7 +160,11 @@ public class ProcessController : ControllerBase
             }
         }
         
-        return start_processes;
+        return start_processes.Select(sp =>
+        {
+            sp.Date = TimeZoneInfo.ConvertTimeFromUtc(sp.Date, KraskTimeZone);
+            return sp;
+        }).ToList();
     }
 
     
@@ -167,7 +175,12 @@ public class ProcessController : ControllerBase
         return _dbContext.MountedProcesses
             .Where(p => p.PcSender.hostname == hostname && p.MonutedIndex == Mid)
             .OrderByDescending(x => x.MonutedIndex)
-            .ToList<MountedProcess>();
+            .ToList<MountedProcess>()  
+            .Select(Mp =>
+            {
+                Mp.Date = TimeZoneInfo.ConvertTimeFromUtc(Mp.Date, KraskTimeZone); 
+                return Mp;
+            }).ToList<MountedProcess>();
     }
 
     
@@ -178,7 +191,7 @@ public class ProcessController : ControllerBase
         return _dbContext.MountedProcesses
             .Where(x => x.PcSender.hostname == hostname)
             .GroupBy(x => x.Date)
-            .Select(x => x.Key)
+            .Select(x => TimeZoneInfo.ConvertTimeFromUtc(x.Key, KraskTimeZone))
             .ToList();;
     }
     
@@ -190,7 +203,7 @@ public class ProcessController : ControllerBase
         return _dbContext.ProcessActions
             .Where(x => x.PcSender.hostname == hostname)
             .GroupBy(x => x.Date)
-            .Select(x => x.Key)
+            .Select(x => TimeZoneInfo.ConvertTimeFromUtc(x.Key, KraskTimeZone))
             .ToList();
     }
     

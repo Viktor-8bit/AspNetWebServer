@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -13,36 +13,47 @@ namespace AspNetWebServer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
+                .Annotation("Npgsql:PostgresExtension:btree_gin", ",,");
+
+            migrationBuilder.CreateTable(
+                name: "infoSecuritySpecialists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    HashPassword = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_infoSecuritySpecialists", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Pcs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    hostname = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Online = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    hostname = table.Column<string>(type: "text", nullable: false),
+                    Online = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pcs", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "MountedProcesses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    MonutedIndex = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProcessId = table.Column<int>(type: "int", nullable: false),
-                    PcSenderId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MonutedIndex = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ProcessId = table.Column<int>(type: "integer", nullable: false),
+                    PcSenderId = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,20 +64,16 @@ namespace AspNetWebServer.Migrations
                         principalTable: "Pcs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    HashPassword = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Login = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PCId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    PCId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,19 +84,18 @@ namespace AspNetWebServer.Migrations
                         principalTable: "Pcs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Utilizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    PcId = table.Column<int>(type: "int", nullable: false),
-                    CPU_load = table.Column<float>(type: "float", nullable: false),
-                    RAM = table.Column<float>(type: "float", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PcId = table.Column<int>(type: "integer", nullable: false),
+                    CPU_load = table.Column<float>(type: "real", nullable: false),
+                    RAM = table.Column<float>(type: "real", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,23 +106,21 @@ namespace AspNetWebServer.Migrations
                         principalTable: "Pcs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "ProcessActions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Action = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProcessId = table.Column<int>(type: "int", nullable: false),
-                    MountedProcessId = table.Column<int>(type: "int", nullable: false),
-                    PcSenderId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    TimeStarted = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Action = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ProcessId = table.Column<int>(type: "integer", nullable: false),
+                    MountedProcessId = table.Column<int>(type: "integer", nullable: false),
+                    PcSenderId = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TimeStarted = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,13 +137,24 @@ namespace AspNetWebServer.Migrations
                         principalTable: "Pcs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_MountedProcesses_PcSenderId",
                 table: "MountedProcesses",
                 column: "PcSenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "MountedProcess_Id_MonutedIndex_Index",
+                table: "MountedProcesses",
+                columns: new[] { "Id", "MonutedIndex" })
+                .Annotation("Npgsql:IndexMethod", "btree");
+
+            migrationBuilder.CreateIndex(
+                name: "Pc_Id_Hostname_Index",
+                table: "Pcs",
+                columns: new[] { "Id", "hostname" })
+                .Annotation("Npgsql:IndexMethod", "btree");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProcessActions_MountedProcessId",
@@ -150,6 +165,12 @@ namespace AspNetWebServer.Migrations
                 name: "IX_ProcessActions_PcSenderId",
                 table: "ProcessActions",
                 column: "PcSenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "ProcessAction_Id_Date_MountedProcessId_Index",
+                table: "ProcessActions",
+                columns: new[] { "Id", "Date", "MountedProcessId" })
+                .Annotation("Npgsql:IndexMethod", "btree");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_PCId",
@@ -165,6 +186,9 @@ namespace AspNetWebServer.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "infoSecuritySpecialists");
+
             migrationBuilder.DropTable(
                 name: "ProcessActions");
 

@@ -14,12 +14,14 @@ using Newtonsoft.Json;
 
 namespace AspNetWebServer.Controllers
 {
-    
+
 
     [Route("api/[controller]")]
     [ApiController]
     public class UtilizationController : ControllerBase
     {
+        public TimeZoneInfo KraskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Krasnoyarsk");
+
         private readonly ApplicationContext _dbContext;
 
         public UtilizationController(ApplicationContext dbContext )
@@ -32,7 +34,6 @@ namespace AspNetWebServer.Controllers
         {
             try
             {
-                Console.WriteLine(StashedUtilizations);
                 Pc PC = _dbContext.Pcs.FirstOrDefault<Pc>(pc => pc.hostname == hostname);
                 foreach (JsonUtilization stashed_util in StashedUtilizations)
                 {
@@ -50,21 +51,26 @@ namespace AspNetWebServer.Controllers
                 await _dbContext.SaveChangesAsync();
                 return Ok();
             }
-            catch
+            catch(Exception e)
             {
                 return BadRequest();
             }
         }
         
         
-        [HttpGet("GetFromPc/{hostname}")] // , [FromRoute] string at, [FromRoute] string to
-        public async Task<IEnumerable<Utilization>> GetFromPC([FromRoute] string hostname) // , [FromRoute] string at, [FromRoute] string to
+        [HttpGet("GetFromPc/{hostname}")]
+        public async Task<IEnumerable<Utilization>> GetFromPC([FromRoute] string hostname) 
         {
             List<Utilization> my_util = _dbContext.Utilizations
                 .Where(util => util.Pc.hostname == hostname)
                 .OrderByDescending(u => u.Date)
                 .Take(5)
-                .ToList<Utilization>();
+                .ToList<Utilization>()
+                .Select(U =>
+                {
+                    U.Date = TimeZoneInfo.ConvertTimeFromUtc(U.Date, KraskTimeZone);
+                    return U;
+                } ).ToList<Utilization>();
             return my_util;
         }
         

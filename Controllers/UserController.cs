@@ -25,11 +25,5 @@ namespace AspNetWebServer.Controllers
         public async Task<List<User>> GetUsers() {
             return _dbContext.Users.ToList<User>();
         }
-
-        //[HttpPost("SetPC/{hostname}")]
-        //public string set_pc([FromRoute] string hostname) {
-        //    return hostname;
-        //}
-        
     }
 }

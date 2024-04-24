@@ -9,4 +9,6 @@ public class MountedProcess
     public Pc PcSender { get; set; }
     public DateTime Date { get; set; }
     
+    public ICollection<ProcessAction> ProcessActions { get; set; }
+
 }

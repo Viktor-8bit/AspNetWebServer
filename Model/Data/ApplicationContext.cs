@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using  MySql.Data.EntityFrameworkCore;
+﻿using AspNetWebServer.Controllers;
+using Microsoft.EntityFrameworkCore;
 using AspNetWebServer.Model.Data.ProcessMonitoring;
 
 namespace AspNetWebServer.Model.Data
@@ -7,6 +7,7 @@ namespace AspNetWebServer.Model.Data
     public class ApplicationContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<infoSecuritySpecialist> infoSecuritySpecialists { get; set; }
         public DbSet<Pc> Pcs { get; set; }
         public DbSet<MountedProcess> MountedProcesses { get; set; }
         public DbSet<ProcessAction> ProcessActions { get; set; }
@@ -14,37 +15,45 @@ namespace AspNetWebServer.Model.Data
         
         public string connectionString;
 
-        //public ApplicationContext(string connectionString)
-        //{
-        //    this.connectionString = connectionString;   // получаем извне строку подключения
-        //    Database.EnsureCreated();
-        //}
-
         public ApplicationContext()
         {
-            this.connectionString = "Server=localhost;port=8080;Database=spyapp;User Id=root;Password=123;";
-            //Database.EnsureCreated();
+            this.connectionString = "Host=localhost;port=4356;Database=spyapp;Username=postgres;Password=5IODgzvwHK8zwXt1KKlzHJPxIluK1CPI;";   // получаем извне строку подключения
+            // Database.EnsureCreated();
         }
-
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            optionsBuilder.UseNpgsql(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.HasPostgresExtension("btree_gin");
+            
+            
+            modelBuilder.Entity<ProcessAction>()
+                .HasOne(pa => pa.MountedProces)
+                .WithMany(mp => mp.ProcessActions)
+                .HasForeignKey(pa => pa.MountedProcessId);
+            
+            modelBuilder.Entity<ProcessAction>()
+                .HasIndex(pa => new { pa.Id, pa.Date, pa.MountedProcessId })
+                .HasDatabaseName("ProcessAction_Id_Date_MountedProcessId_Index")
+                .HasMethod("btree");
+            
+            modelBuilder.Entity<MountedProcess>()
+                .HasIndex(Mp => new { Mp.Id, Mp.MonutedIndex })
+                .HasDatabaseName("MountedProcess_Id_MonutedIndex_Index")
+                .HasMethod("btree");
+            
+            modelBuilder.Entity<Pc>()
+                .HasIndex(Pc => new { Pc.Id, Pc.hostname })
+                .HasDatabaseName("Pc_Id_Hostname_Index")
+                .HasMethod("btree");
+            
 
-            //modelBuilder.Entity<Person>().HasData(
-            //      new Person { Id = 1, Name = "Tosaadsm", Age = 37 },
-            //      new Person { Id = 2, Name = "Boasdasdb", Age = 41 },
-            //      new Person { Id = 3, Name = "Sadsadm", Age = 24 }
-            //);
-
-            //modelBuilder.Entity<User>().ToTable(t => t.HasCheckConstraint("Login", "CHAR_LENGTH(Login) < 20") );
-
-            //modelBuilder.ApplyConfiguration(new UserConfiguration());
-            //modelBuilder.Entity<User>().Property(u => u.sinus).HasDefaultValueSql("SIN(30)"); // DATETIME('now')
         }
     }
 }

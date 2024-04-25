@@ -63,7 +63,16 @@ namespace AspNetWebServer
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins("http://localhost:5173", "http://185.104.114.7", "http://localhost:8000", "http://10.66.24.3")
+                        .WithOrigins(
+                        "http://185.104.114.7:5173", 
+                        "http://localhost:5173", 
+                        "http://185.104.114.7", 
+                        "http://localhost:8001", 
+                        "http://10.66.24.0",
+                        "http://172.17.0.4:8000",
+                        "http://172.17.0.5:5173",
+                        "http://185.104.114.7:8001"
+                        )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

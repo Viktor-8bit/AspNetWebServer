@@ -18,7 +18,7 @@ namespace AspNetWebServer.Model.Data
 
         public ApplicationContext()
         {
-            this.connectionString = "Host=localhost;port=4356;Database=spyapp;Username=postgres;Password=5IODgzvwHK8zwXt1KKlzHJPxIluK1CPI;";   // получаем извне строку подключения
+            this.connectionString = "Host=185.104.114.7;port=32768;Database=spyapp;Username=postgres;Password=5IODgzvwHK8zwXt1KKlzHJPxIluK1CPI;";   // получаем извне строку подключения
             // Database.EnsureCreated();
         }
         

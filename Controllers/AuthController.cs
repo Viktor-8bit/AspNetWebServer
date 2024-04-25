@@ -24,13 +24,15 @@ namespace AspNetWebServer.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    
-    private readonly ApplicationContext _dbContext;
+    public TimeZoneInfo KraskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Krasnoyarsk");
 
+    private readonly ApplicationContext _dbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
-    public AuthController(ApplicationContext dbContext )
+    public AuthController(ApplicationContext dbContext, IHttpContextAccessor httpContextAccessor)
     {
         _dbContext = dbContext;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     [HttpPost("Registration/")]
@@ -88,10 +90,42 @@ public class AuthController : ControllerBase
             issuer: AuthOptions.ISSUER,
             audience: AuthOptions.AUDIENCE,
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(400)), // 400 минут
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1000)), // 400 минут
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            
+
+        _dbContext.LoginHistoryLog.Add(new LoginHistory()
+            { 
+                User = bdInfoSecSpec,
+                IpAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString(), 
+                LoginTime = DateTime.UtcNow, 
+                UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString()
+            });
+        await _dbContext.SaveChangesAsync();
+        
         return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+    }
+
+
+    [HttpGet("LoginHistory/{username}")]
+    [Authorize]
+    public async Task<IActionResult> LoginHistoryLogs([FromRoute] String username)
+    {
+        var currentUserName = User.Identity.Name; 
+        
+        if (currentUserName != username)
+        {
+            return Unauthorized();
+        }
+        
+        return Ok(
+            _dbContext.LoginHistoryLog.Where(Lh => Lh.User.Login.Equals(username))
+                .ToList()
+                .OrderByDescending(Lh => Lh.LoginTime)
+                .Select(Lh =>
+                {
+                    Lh.LoginTime = TimeZoneInfo.ConvertTimeFromUtc(Lh.LoginTime, KraskTimeZone);
+                    return Lh;
+                }));
     }
 
 
@@ -99,7 +133,6 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> LoginCheck()
     {
-        
         return Ok();
     }
 

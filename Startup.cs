@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-
+using AspNetWebServer.Services;
 
 using AspNetWebServer.Model.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,10 +32,12 @@ namespace AspNetWebServer
             //TODO: Swagger 401 model
             //services.Configure<ApiBehaviorOptions>(options => options.);
 
-            
+            services.AddHostedService<HeartbeatService>();
             
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers();
+            
+            services.AddHttpContextAccessor();
 
             //Authorization && Authorization
             services.AddAuthorization();
@@ -61,7 +63,7 @@ namespace AspNetWebServer
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins("http://localhost:5173", "185.104.114.7", "http://localhost:8000")
+                        .WithOrigins("http://localhost:5173", "http://185.104.114.7", "http://localhost:8000", "http://10.66.24.3")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -89,12 +91,10 @@ namespace AspNetWebServer
                     });
             });
             */
-
             //Add Caching
+            
             services.AddMemoryCache();
-
-
-
+            
             //Add database
             services.AddDbContext<ApplicationContext>();
 

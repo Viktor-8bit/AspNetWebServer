@@ -152,7 +152,7 @@ public class ProcessController : ControllerBase
                         .Where(pac => pac.ProcessId == pa.ProcessId && pac.Name == pa.Name)
                         .FirstOrDefault<JsonProcessClient>();
                 
-                if (delete_process == null)
+                if (delete_process != null)
                     start_processes.Remove(delete_process!);
             }
 
@@ -217,7 +217,7 @@ public class ProcessController : ControllerBase
             .ToList();
     }
     
-    [Authorize]
+    
     [HttpGet("DeleteAllProcesses")]
     public async Task<IActionResult> DeleteAll()
     {

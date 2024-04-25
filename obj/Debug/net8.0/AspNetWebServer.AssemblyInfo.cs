@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AspNetWebServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1fdc05c46ef5d9b5a75dd2f560f058d35ca43d0e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d4868006296e46571d37b47abeddfbe1c5512ec7")]
 [assembly: System.Reflection.AssemblyProductAttribute("AspNetWebServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AspNetWebServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

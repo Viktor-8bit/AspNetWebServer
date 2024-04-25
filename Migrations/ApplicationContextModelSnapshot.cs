@@ -23,6 +23,35 @@ namespace AspNetWebServer.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gin");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AspNetWebServer.Model.Data.LoginHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LoginTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserAgent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LoginHistoryLog");
+                });
+
             modelBuilder.Entity("AspNetWebServer.Model.Data.Pc", b =>
                 {
                     b.Property<int>("Id")
@@ -200,6 +229,17 @@ namespace AspNetWebServer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("infoSecuritySpecialists");
+                });
+
+            modelBuilder.Entity("AspNetWebServer.Model.Data.LoginHistory", b =>
+                {
+                    b.HasOne("AspNetWebServer.Model.Data.infoSecuritySpecialist", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AspNetWebServer.Model.Data.ProcessMonitoring.MountedProcess", b =>

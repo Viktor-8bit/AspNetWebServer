@@ -7,6 +7,7 @@ namespace AspNetWebServer.Model.Data
     public class ApplicationContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<LoginHistory> LoginHistoryLog { get; set; }
         public DbSet<infoSecuritySpecialist> infoSecuritySpecialists { get; set; }
         public DbSet<Pc> Pcs { get; set; }
         public DbSet<MountedProcess> MountedProcesses { get; set; }

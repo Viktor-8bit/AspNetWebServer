@@ -35,6 +35,15 @@ public class PcController
     public async Task<List<Pc>> GetAllPc() {
         return await _dbContext.Pcs.ToListAsync<Pc>();
     }
+    
+    [HttpGet("SearchPc/{Name}")]
+    [Authorize]
+    public async Task<List<Pc>> SearchPc([FromRoute] string Name) {
+        return await _dbContext.Pcs
+            .Where(Pc => EF.Functions.Like(Pc.hostname.ToLower(), $"%{Name.ToLower()}%"))
+            .ToListAsync<Pc>();
+    }
+    
 
     [HttpPost("AddPC/{hostname}")]
     public async Task AddPc([FromRoute] string hostname)
